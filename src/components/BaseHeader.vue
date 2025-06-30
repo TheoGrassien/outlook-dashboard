@@ -2,22 +2,19 @@
   <header class="base-header">
     <div class="header-left">
       <router-link to="/" class="header-link">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
+        <i class="fas fa-home home-icon"></i>
+        <span>Accueil</span>
       </router-link>
-      <template v-if="userStore.user">
-        <router-link to="/conversations" class="header-link"
-          >Conversations</router-link
-        >
-      </template>
     </div>
     <div class="header-right">
-      <i class="fas fa-user"></i>
       <template v-if="userStore.user">
-        <span
-          >Connecté en tant que :
-          {{ userStore.user.name || userStore.user.username }}</span
-        >
+        <i class="fas fa-user icon"></i>
+        <div class="user-info">
+          <div class="user-name">
+            {{ userStore.user.name || userStore.user.username }}
+          </div>
+          <div class="user-email">{{ userStore.user.username }}</div>
+        </div>
       </template>
       <template v-else>
         <SigninButton />
@@ -45,37 +42,58 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #26a69a;
+  background-color: white;
   color: #222;
+  border-bottom: 1px solid #eaecf0;
+  box-shadow: 0px 0px 24px 0px rgba(31, 45, 70, 0.1);
   padding: 16px 32px;
-  font-family: Arial, sans-serif;
+  height: 40px;
 }
+
 .header-left,
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
 }
+
 .header-right {
   font-weight: 500;
 }
+
 .base-header i {
   font-size: 1.2rem;
 }
+
 .header-link {
-  margin-left: 1rem;
   color: #222;
   text-decoration: none;
-  font-weight: bold;
   display: flex;
   align-items: center;
   gap: 0.3rem;
 }
-.header-link:first-child {
-  margin-left: 0;
-}
-.header-link.router-link-exact-active {
-  color: #00796b;
+
+.header-link:hover {
   text-decoration: underline;
+}
+
+.header-link:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.base-header .icon {
+  font-size: 16px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-email {
+  color: #667185;
+  font-size: 0.875rem;
 }
 </style>

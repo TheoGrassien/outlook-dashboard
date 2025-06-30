@@ -1,61 +1,54 @@
 <template>
-  <div>
-    <h2>Nouveau mail</h2>
-    <form
-      @submit.prevent="submitMail"
-      style="
-        background: #f8f8f8;
-        padding: 1em;
-        border-radius: 8px;
-        max-width: 500px;
-      "
-    >
-      <div style="margin-bottom: 0.5em">
-        <label
-          >Destinataire :
+  <div class="mail-new-page">
+    <div class="back-link">
+      <BaseButton color="ghost" @click="cancel" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Retour
+      </BaseButton>
+    </div>
+    <h2 class="page-title">Nouveau mail</h2>
+    <form @submit.prevent="submitMail" class="mail-form">
+      <div class="form-group">
+        <label class="form-label">
+          Destinataire
           <input
             v-model="to"
             type="email"
             required
             placeholder="exemple@domaine.com"
-            style="width: 100%"
+            class="form-input"
         /></label>
       </div>
-      <div style="margin-bottom: 0.5em">
-        <label
-          >Objet :
+      <div class="form-group">
+        <label class="form-label">
+          Objet
           <input
             v-model="subject"
             type="text"
             required
             placeholder="Objet du mail"
-            style="width: 100%"
+            class="form-input"
         /></label>
       </div>
-      <div style="margin-bottom: 0.5em">
-        <label
-          >Contenu :
-          <textarea
-            v-model="content"
-            required
-            placeholder="Contenu du mail"
-            style="width: 100%; min-height: 60px"
-          ></textarea>
+      <div class="form-group">
+        <label class="form-label">
+          Contenu
+          <textarea v-model="content" required class="form-textarea"></textarea>
         </label>
       </div>
-      <div v-if="formError" style="color: red; margin-bottom: 0.5em">
+      <div v-if="formError" class="form-error">
         {{ formError }}
       </div>
-      <BaseButton color="primary" type="submit">Ajouter</BaseButton>
-      <BaseButton
-        color="danger"
-        style="margin-left: 1em"
-        @click.prevent="cancel"
-        >Annuler</BaseButton
-      >
+      <div class="form-actions">
+        <BaseButton color="primary" type="submit">Ajouter</BaseButton>
+        <BaseButton color="secondary" @click.prevent="cancel"
+          >Annuler</BaseButton
+        >
+      </div>
     </form>
   </div>
 </template>
+
 <script>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -94,4 +87,82 @@ export default {
     return { to, subject, content, formError, submitMail, cancel };
   },
 };
-</script> 
+</script>
+
+<style scoped>
+.mail-new-page {
+  padding: 20px;
+}
+
+.back-link {
+  margin-bottom: 20px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.page-title {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 0.5em;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-top: 8px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+.form-error {
+  color: red;
+  margin-bottom: 0.5em;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+</style> 

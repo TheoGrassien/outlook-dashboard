@@ -1,83 +1,40 @@
 <template>
-  <main>
+  <div v-if="!userStore.user" class="not-connected">
     <h1 class="home-page-title">Bienvenue sur la page d'accueil !</h1>
-    <div v-if="userStore.user" class="user-info">
-      Bonjour, {{ userStore.user.name || userStore.user.username }}
-    </div>
+    <p class="connection-message">
+      Veuillez vous connecter pour accéder à vos mails.
+    </p>
+  </div>
+  <div v-else>
     <div v-if="error" style="color: red">Erreur : {{ error }}</div>
     <div v-else>
-      <h2>Boîte de réception</h2>
-      <BaseButton
-        color="primary"
-        @click="goToNewMail"
-        style="margin-bottom: 1em"
-        >Nouveau mail</BaseButton
-      >
-      <ul style="list-style: none; padding: 0">
-        <li
+      <div class="home-page-header">
+        <h1 class="home-page-title">
+          Bonjour, {{ userStore.user.name || userStore.user.username }}
+        </h1>
+        <BaseButton color="primary" @click="goToNewMail"
+          ><i class="fas fa-plus icon-plus"></i> Nouveau mail</BaseButton
+        >
+      </div>
+      <ul class="mail-list">
+        <MailItem
           v-for="mail in mails"
           :key="mail.id"
-          style="
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-          "
-        >
-          <div style="flex: 1; cursor: pointer" @click="openMail(mail)">
-            <div>
-              <strong>De :</strong>
-              {{ mail.from?.emailAddress?.name || "Inconnu" }}
-            </div>
-            <div><strong>Objet :</strong> {{ mail.subject }}</div>
-            <div
-              style="
-                color: #666;
-                font-size: 0.95em;
-                white-space: pre-line;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-height: 2.5em;
-              "
-            >
-              {{ mail.bodyPreview }}
-            </div>
-          </div>
-          <BaseButton
-            color="danger"
-            size="small"
-            style="margin-left: 1em"
-            @click.stop="removeMail(mail.id)"
-            >Supprimer</BaseButton
-          >
-        </li>
+          :mail="mail"
+          @open="openMail"
+          @remove="removeMail"
+        />
       </ul>
     </div>
-    <div class="button-container">
-      <BaseButton class="custom-margin"
-        >BaseButton with custom margin</BaseButton
-      >
-      <BaseButton disabled>BaseButton disabled</BaseButton>
-      <BaseButton color="warn">BaseButton warn</BaseButton>
-      <BaseButton color="danger">BaseButton danger</BaseButton>
-      <AsyncButton
-        class="custom-margin"
-        :color="'primary'"
-        :onClick="handleAsyncClick"
-      >
-        Increment the wait time by 1 second for each click
-      </AsyncButton>
-    </div>
-  </main>
+  </div>
 </template>
 
 <script>
 import BaseButton from "../components/BaseButton.vue";
-import AsyncButton from "../components/AsyncButton.vue";
+import MailItem from "../components/MailItem.vue";
 import { useUserStore } from "../lib/userStore.js";
 import { getUserMails } from "../lib/microsoftGraph";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 
 function generateFakeMail(to, subject, content) {
@@ -97,7 +54,7 @@ export default {
   name: "HomePage",
   components: {
     BaseButton,
-    AsyncButton,
+    MailItem,
   },
   setup() {
     const userStore = useUserStore();
@@ -111,8 +68,15 @@ export default {
     const newContent = ref("");
     const formError = ref("");
 
-    onMounted(async () => {
+    async function loadMails() {
+      if (!userStore.user) {
+        mails.value = [];
+        error.value = null;
+        return;
+      }
+
       try {
+        error.value = null;
         const data = await getUserMails();
         mails.value = data.value;
         // Ajout d'un mail fictif si passé via navigation
@@ -124,8 +88,26 @@ export default {
         }
       } catch (e) {
         error.value = e.message;
+        mails.value = [];
       }
+    }
+
+    onMounted(() => {
+      loadMails();
     });
+
+    // Surveiller les changements de l'utilisateur
+    watch(
+      () => userStore.user,
+      (newUser) => {
+        if (newUser) {
+          loadMails();
+        } else {
+          mails.value = [];
+          error.value = null;
+        }
+      }
+    );
 
     function openMail(mail) {
       router.push({ name: "MailDetail", params: { id: mail.id } });
@@ -167,42 +149,39 @@ export default {
       goToNewMail,
     };
   },
-  data() {
-    return {
-      asyncClickCount: 0,
-    };
-  },
-  methods: {
-    handleAsyncClick() {
-      this.asyncClickCount++;
-      const waitTime = 2000 + (this.asyncClickCount - 1) * 1000;
-      return new Promise((resolve) => {
-        setTimeout(resolve, waitTime);
-      });
-    },
-  },
 };
 </script>
 
 <style scoped>
-.home-page-title {
-  text-align: center;
-  font-size: 1.5rem;
-}
-.custom-margin {
-  margin: 10px;
-}
-.button-container {
+.home-page-header {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  padding: 0px 16px;
 }
-.user-info {
+
+.home-page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.mail-list {
+  list-style: none;
+  padding: 0;
+}
+
+.not-connected {
   text-align: center;
-  margin-bottom: 1rem;
-  font-weight: bold;
-  color: #26a69a;
+  padding: 2rem;
+}
+
+.connection-message {
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 1rem;
+}
+
+.icon-plus {
+  margin-right: 8px;
 }
 </style>
