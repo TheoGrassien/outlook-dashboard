@@ -1,11 +1,9 @@
 <template>
-  <div class="base-layout">
-    <BaseHeader />
-    <main class="base-layout-content">
-      <slot />
-    </main>
-    <BaseFooter />
-  </div>
+  <BaseHeader />
+  <main class="main">
+    <slot />
+  </main>
+  <BaseFooter />
 </template>
 
 <script>
@@ -22,12 +20,10 @@ export default {
 </script>
 
 <style scoped>
-.base-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-.base-layout-content {
-  flex: 1;
+.main {
+  min-height: calc(100vh - 189px);
+  margin: auto;
+  max-width: 900px;
+  padding: 32px 48px;
 }
 </style> 
