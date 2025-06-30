@@ -11,7 +11,8 @@ export default {
     color: {
       type: String,
       default: "primary",
-      validator: (value) => ["primary", "warn", "danger"].includes(value),
+      validator: (value) =>
+        ["primary", "warn", "danger", "secondary", "ghost"].includes(value),
     },
   },
 };
@@ -19,7 +20,7 @@ export default {
 
 <style scoped>
 .base-button {
-  padding: 0.5em 1.2em;
+  padding: 8px 16px;
   border: none;
   border-radius: 4px;
   color: white;
@@ -32,10 +33,10 @@ export default {
 }
 
 .base-button--primary {
-  background: #26a69a;
+  background: #7f56d9;
 }
 .base-button--primary:hover {
-  background: #218e83;
+  background: #6941c6;
 }
 
 .base-button--warn {
@@ -50,6 +51,30 @@ export default {
 }
 .base-button--danger:hover {
   background: #d32f2f;
+}
+
+.base-button--secondary {
+  background: transparent;
+  border: 1px solid #d0d4dd;
+  color: #222;
+}
+
+.base-button--secondary:hover {
+  background: #f9fafb;
+  border: 1px solid #d0d4dd;
+}
+
+.base-button--ghost {
+  background: transparent;
+  color: #222;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.base-button--ghost:hover {
+  background: #f0f0f0;
+  color: #222;
 }
 
 .base-button:disabled {

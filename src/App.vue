@@ -1,6 +1,6 @@
 <template>
   <BaseLayout>
-    <router-view class="home-page" />
+    <router-view />
   </BaseLayout>
 </template>
 
@@ -20,14 +20,5 @@ body {
   padding: 0;
   box-sizing: border-box;
   font-family: Arial, sans-serif;
-}
-.app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.home-page {
-  flex: 1;
 }
 </style>

@@ -1,8 +1,6 @@
 <template>
   <footer class="base-footer">
-    <p class="base-footer-text">
-      Copyright 2025 - Tous droits réservés | Théo Grassien
-    </p>
+    <p class="base-footer-text">Copyright 2025 - Tous droits réservés</p>
   </footer>
 </template>
 
@@ -14,8 +12,9 @@ export default {
 
 <style scoped>
 .base-footer {
-  background-color: #cfcfcf;
+  background-color: #f2f4f7;
   padding: 2px 32px;
+  height: 52px;
 }
 .base-footer-text {
   text-align: center;
