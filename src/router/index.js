@@ -1,15 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '../pages/HomePage.vue';
-import ConversationsIndexPage from '../pages/ConversationsIndexPage.vue';
-import ConversationShowPage from '../pages/ConversationShowPage.vue';
 import MailDetailPage from '../pages/MailDetailPage.vue';
+import MailNewPage from '../pages/MailNewPage.vue';
 import { useUserStore } from '../lib/userStore.js';
 
 const routes = [
-  { path: '/', component: HomePage },
-  { path: '/conversations', component: ConversationsIndexPage },
-  { path: '/conversations/:id', component: ConversationShowPage },
+  { path: '/', component: HomePage, name: 'Home' },
   { path: '/mail/:id', component: MailDetailPage, name: 'MailDetail' },
+  { path: '/mail/new', component: MailNewPage, name: 'MailNew' },
 ];
 
 const router = createRouter({

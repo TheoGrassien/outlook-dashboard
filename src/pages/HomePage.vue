@@ -9,9 +9,9 @@
       <h2>Boîte de réception</h2>
       <BaseButton
         color="primary"
-        @click="addFakeMail"
+        @click="goToNewMail"
         style="margin-bottom: 1em"
-        >Ajouter un e-mail fictif</BaseButton
+        >Nouveau mail</BaseButton
       >
       <ul style="list-style: none; padding: 0">
         <li
@@ -80,17 +80,16 @@ import { getUserMails } from "../lib/microsoftGraph";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
-function generateFakeMail() {
+function generateFakeMail(to, subject, content) {
   const now = new Date();
   return {
     id: "fake-" + Math.random().toString(36).substr(2, 9),
     from: { emailAddress: { name: "Fictif", address: "fictif@example.com" } },
-    subject: "Nouveau mail fictif",
-    bodyPreview:
-      "Ceci est un e-mail fictif ajouté localement à " +
-      now.toLocaleTimeString(),
+    toRecipients: [{ emailAddress: { address: to } }],
+    subject: subject,
+    bodyPreview: content.slice(0, 80),
     receivedDateTime: now.toISOString(),
-    body: { content: "Ceci est le contenu complet du mail fictif." },
+    body: { content: content },
   };
 }
 
@@ -106,10 +105,23 @@ export default {
     const error = ref(null);
     const router = useRouter();
 
+    // Champs du formulaire d'ajout
+    const newTo = ref("");
+    const newSubject = ref("");
+    const newContent = ref("");
+    const formError = ref("");
+
     onMounted(async () => {
       try {
         const data = await getUserMails();
         mails.value = data.value;
+        // Ajout d'un mail fictif si passé via navigation
+        if (window.history.state && window.history.state.newMail) {
+          const { to, subject, content } = window.history.state.newMail;
+          mails.value.unshift(generateFakeMail(to, subject, content));
+          // Nettoyer l'état pour éviter l'ajout multiple si on rafraîchit
+          window.history.replaceState({}, document.title);
+        }
       } catch (e) {
         error.value = e.message;
       }
@@ -120,14 +132,40 @@ export default {
     }
 
     function addFakeMail() {
-      mails.value.unshift(generateFakeMail());
+      if (!newTo.value || !newSubject.value || !newContent.value) {
+        formError.value = "Tous les champs sont obligatoires.";
+        return;
+      }
+      mails.value.unshift(
+        generateFakeMail(newTo.value, newSubject.value, newContent.value)
+      );
+      newTo.value = "";
+      newSubject.value = "";
+      newContent.value = "";
+      formError.value = "";
     }
 
     function removeMail(id) {
       mails.value = mails.value.filter((mail) => mail.id !== id);
     }
 
-    return { userStore, mails, error, openMail, addFakeMail, removeMail };
+    function goToNewMail() {
+      router.push({ name: "MailNew" });
+    }
+
+    return {
+      userStore,
+      mails,
+      error,
+      openMail,
+      addFakeMail,
+      removeMail,
+      newTo,
+      newSubject,
+      newContent,
+      formError,
+      goToNewMail,
+    };
   },
   data() {
     return {
