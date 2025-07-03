@@ -15,6 +15,7 @@
           </div>
           <div class="user-email">{{ userStore.user.username }}</div>
         </div>
+        <BaseButton color="secondary" @click="logout">Déconnexion</BaseButton>
       </template>
       <template v-else>
         <SigninButton />
@@ -32,7 +33,11 @@ export default {
   components: { SigninButton },
   setup() {
     const userStore = useUserStore();
-    return { userStore };
+    function logout() {
+      userStore.logout();
+      // Ne pas appeler signOut() ici pour ne pas déconnecter de Microsoft globalement
+    }
+    return { userStore, logout };
   },
 };
 </script>

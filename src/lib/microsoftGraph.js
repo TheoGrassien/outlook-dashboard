@@ -72,3 +72,7 @@ export async function getUserMailById(id) {
   }
   return await mailResponse.json();
 }
+
+export function signOut() {
+  msalInstance.logoutPopup();
+}
