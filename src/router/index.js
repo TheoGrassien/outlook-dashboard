@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '../pages/HomePage.vue';
 import MailDetailPage from '../pages/MailDetailPage.vue';
 import MailNewPage from '../pages/MailNewPage.vue';
+import StatsPage from '../pages/StatsPage.vue';
 import { useUserStore } from '../lib/userStore.js';
 
 const routes = [
@@ -16,6 +17,12 @@ const routes = [
     path: '/mail/new',
     component: MailNewPage,
     name: 'MailNew',
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/stats',
+    component: StatsPage,
+    name: 'Stats',
     meta: { requiresAuth: true },
   },
 ];

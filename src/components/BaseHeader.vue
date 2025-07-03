@@ -5,6 +5,15 @@
         <i class="fas fa-home home-icon"></i>
         <span>Accueil</span>
       </router-link>
+      <router-link
+        v-if="userStore.user"
+        to="/stats"
+        class="header-link"
+        style="margin-left: 1rem;"
+      >
+        <i class="fas fa-chart-bar"></i>
+        <span>Statistiques</span>
+      </router-link>
     </div>
     <div class="header-right">
       <template v-if="userStore.user">
