@@ -16,9 +16,10 @@
           ><i class="fas fa-plus icon-plus"></i> Nouveau mail</BaseButton
         >
       </div>
+      <MailSearchBar @search="onSearch" />
       <ul class="mail-list">
         <MailItem
-          v-for="mail in mails"
+          v-for="mail in filteredMails"
           :key="mail.id"
           :mail="mail"
           @open="openMail"
@@ -32,9 +33,10 @@
 <script>
 import BaseButton from "../components/BaseButton.vue";
 import MailItem from "../components/MailItem.vue";
+import MailSearchBar from "../components/MailSearchBar.vue";
 import { useUserStore } from "../lib/userStore.js";
 import { getUserMails } from "../lib/microsoftGraph";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 
 function generateFakeMail(to, subject, content) {
@@ -55,6 +57,7 @@ export default {
   components: {
     BaseButton,
     MailItem,
+    MailSearchBar, // Ajouté
   },
   setup() {
     const userStore = useUserStore();
@@ -67,6 +70,11 @@ export default {
     const newSubject = ref("");
     const newContent = ref("");
     const formError = ref("");
+    const search = ref({ from: "", keyword: "", date: "" });
+
+    function onSearch(newSearch) {
+      search.value = newSearch;
+    }
 
     async function loadMails() {
       if (!userStore.user) {
@@ -135,6 +143,31 @@ export default {
       router.push({ name: "MailNew" });
     }
 
+    const filteredMails = computed(() => {
+      return mails.value.filter((mail) => {
+        // Filtre expéditeur
+        const fromMatch = !search.value.from ||
+          (mail.from?.emailAddress?.address || "")
+            .toLowerCase()
+            .includes(search.value.from.toLowerCase()) ||
+          (mail.from?.emailAddress?.name || "")
+            .toLowerCase()
+            .includes(search.value.from.toLowerCase());
+        // Filtre mot-clé (dans sujet ou contenu)
+        const keywordMatch = !search.value.keyword ||
+          (mail.subject || "")
+            .toLowerCase()
+            .includes(search.value.keyword.toLowerCase()) ||
+          (mail.bodyPreview || "")
+            .toLowerCase()
+            .includes(search.value.keyword.toLowerCase());
+        // Filtre date (YYYY-MM-DD)
+        const dateMatch = !search.value.date ||
+          (mail.receivedDateTime || "").startsWith(search.value.date);
+        return fromMatch && keywordMatch && dateMatch;
+      });
+    });
+
     return {
       userStore,
       mails,
@@ -147,6 +180,9 @@ export default {
       newContent,
       formError,
       goToNewMail,
+      search,
+      filteredMails,
+      onSearch, // <-- Ajoute ceci
     };
   },
 };

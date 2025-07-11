@@ -5,6 +5,15 @@
         <i class="fas fa-home home-icon"></i>
         <span>Accueil</span>
       </router-link>
+      <router-link
+        v-if="userStore.user"
+        to="/stats"
+        class="header-link"
+        style="margin-left: 1rem;"
+      >
+        <i class="fas fa-chart-bar"></i>
+        <span>Statistiques</span>
+      </router-link>
     </div>
     <div class="header-right">
       <template v-if="userStore.user">
@@ -15,6 +24,7 @@
           </div>
           <div class="user-email">{{ userStore.user.username }}</div>
         </div>
+        <BaseButton color="secondary" @click="logout">Déconnexion</BaseButton>
       </template>
       <template v-else>
         <SigninButton />
@@ -32,7 +42,11 @@ export default {
   components: { SigninButton },
   setup() {
     const userStore = useUserStore();
-    return { userStore };
+    function logout() {
+      userStore.logout();
+      // Ne pas appeler signOut() ici pour ne pas déconnecter de Microsoft globalement
+    }
+    return { userStore, logout };
   },
 };
 </script>
